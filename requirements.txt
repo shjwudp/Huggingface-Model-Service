@@ -1,0 +1,4 @@
+flask_restful
+transformers
+accelerate
+streamlit
