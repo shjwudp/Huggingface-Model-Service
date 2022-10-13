@@ -15,8 +15,8 @@ python generate-server.py --huggingface_model bigscience/bloom-560m --port YOUR_
 
 Run streamlit server.
 ```
-streamlit run streamlit-server.py -- --backend http://localhost:YOUR_GENERATE_SERVER_PORT/
+streamlit run streamlit-server.py -- --backend http://localhost:YOUR_GENERATE_SERVER_PORT/generate
 ```
 
 View your Streamlit app in your browser.
-![image](https://user-images.githubusercontent.com/11439912/195612310-291118b5-485d-44a3-abae-5651d99390cc.png)
+![image](https://user-images.githubusercontent.com/11439912/195617248-6106e280-daf7-4fe8-bf6b-25ab11003f10.png)
