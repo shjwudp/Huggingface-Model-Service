@@ -6,7 +6,7 @@ import argparse
 
 from flask import Flask, request, jsonify, make_response
 from flask_restful import Resource, Api
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, T5ForConditionalGeneration, AutoTokenizer
 
 
 class GPTGenerate(Resource):
@@ -63,9 +63,13 @@ class GenerateServer(object):
         self.app.run(url, debug=False, port=port)
 
 
-def load_model(huggingface_model):
+def load_model(huggingface_model, model_type):
     tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
-    model = AutoModelForCausalLM.from_pretrained(huggingface_model, device_map="auto")
+    assert model_type in ["CLM", "T5"]
+    if model_type == "CLM":
+        model = AutoModelForCausalLM.from_pretrained(huggingface_model, device_map="auto")
+    elif model_type == "T5":
+        model = T5ForConditionalGeneration.from_pretrained(huggingface_model, device_map="auto")
 
     return model, tokenizer
 
@@ -74,6 +78,7 @@ def main():
     parser = argparse.ArgumentParser("Huggingface Generate Model Service")
     parser.add_argument("--huggingface_model", required=True)
     parser.add_argument("--port", default=55556, type=int)
+    parser.add_argument("--model_type", choices=["CLM", "T5"], default="CLM")
     args = parser.parse_args()
 
     model, tokenizer = load_model(args.huggingface_model)
