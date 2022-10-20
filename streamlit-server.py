@@ -8,7 +8,7 @@ import streamlit as st
 def main():
     parser = argparse.ArgumentParser("Streamlit Server")
     parser.add_argument("--backend", required=True)
-    parser.add_argument("--model_name", default="Language Model")
+    parser.add_argument("--displayed_model_name", default="Language Model")
     args = parser.parse_args()
 
     st.set_page_config(  # Alternate names: setup_page, page, layout
