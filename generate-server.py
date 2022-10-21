@@ -81,7 +81,7 @@ def main():
     parser.add_argument("--model_type", choices=["CLM", "T5"], default="CLM")
     args = parser.parse_args()
 
-    model, tokenizer = load_model(args.huggingface_model)
+    model, tokenizer = load_model(args.huggingface_model, args.model_type)
     generate_server = GenerateServer(model, tokenizer)
 
     generate_server.run("0.0.0.0", args.port)
