@@ -20,6 +20,11 @@ class GPTGenerate(Resource):
             request_j = request.get_json()
             context = request_j["context"]
             del request_j["context"]
+            if "output_logits" in request_j:
+                output_logits = request_j["output_logits"]
+                del request_j["output_logits"]
+            else:
+                output_logits = False
 
             input_ids = self.tokenizer(context, return_tensors="pt").input_ids.to(self.model.device)
             request_j["inputs"] = input_ids
@@ -33,9 +38,12 @@ class GPTGenerate(Resource):
                 output = dict(
                     sequences=sequences,
                     sequences_scores=result["sequences_scores"].tolist(),
-                    # scores=[x.tolist for x in result["scores"]],
-                    # beam_indices=result["beam_indices"].tolist(),
                 )
+                if output_logits:
+                    output.update(dict(
+                        scores=[x.tolist for x in result["scores"]],
+                        beam_indices=result["beam_indices"].tolist(),
+                    ))
             else:
                 generate_ids = result
                 output = self.tokenizer.batch_decode(
