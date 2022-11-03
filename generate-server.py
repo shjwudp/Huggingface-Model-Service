@@ -72,7 +72,6 @@ class GenerateServer(object):
 
 
 def load_model(huggingface_model, model_type):
-    assert model_type in ["CLM", "T5", "EVA"]
     if model_type == "CLM":
         model = AutoModelForCausalLM.from_pretrained(huggingface_model, device_map="auto")
         tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
@@ -87,6 +86,11 @@ def load_model(huggingface_model, model_type):
         model = EVAModel.from_pretrained(huggingface_model).cuda()
         tokenizer = EVATokenizer.from_pretrained(huggingface_model)
         sys.path = sys.path[1:]
+    elif model_type == "PANGU":
+        model = AutoModelForCausalLM.from_pretrained(huggingface_model, trust_remote_code=True).cuda()
+        tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
+    else:
+        raise NotImplementedError(f"NOT support this model_type: {model_type}")
 
     return model, tokenizer
 
@@ -95,7 +99,7 @@ def main():
     parser = argparse.ArgumentParser("Huggingface Generate Model Service")
     parser.add_argument("--huggingface_model", required=True)
     parser.add_argument("--port", default=55556, type=int)
-    parser.add_argument("--model_type", choices=["CLM", "T5", "EVA"], default="CLM")
+    parser.add_argument("--model_type", choices=["CLM", "T5", "EVA", "PANGU"], default="CLM")
     args = parser.parse_args()
 
     model, tokenizer = load_model(args.huggingface_model, args.model_type)
