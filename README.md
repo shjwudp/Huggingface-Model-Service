@@ -5,6 +5,7 @@
 Install requirements.
 ```
 git clone https://github.com/shjwudp/Huggingface-Model-Service && cd Huggingface-Model-Service
+git submodule update --init --recursive
 pip install -r requirements.txt
 ```
 

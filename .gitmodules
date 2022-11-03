@@ -1,0 +1,3 @@
+[submodule "third-party/EVA"]
+	path = third-party/EVA
+	url = https://github.com/thu-coai/EVA.git

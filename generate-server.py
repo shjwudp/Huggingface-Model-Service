@@ -72,12 +72,21 @@ class GenerateServer(object):
 
 
 def load_model(huggingface_model, model_type):
-    tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
-    assert model_type in ["CLM", "T5"]
+    assert model_type in ["CLM", "T5", "EVA"]
     if model_type == "CLM":
         model = AutoModelForCausalLM.from_pretrained(huggingface_model, device_map="auto")
+        tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
     elif model_type == "T5":
-        model = T5ForConditionalGeneration.from_pretrained(huggingface_model, device_map="auto")
+        model = T5ForConditionalGeneration.from_pretrained(huggingface_model).cuda()
+        # TODO: T5 model supports automap
+        tokenizer = AutoTokenizer.from_pretrained(huggingface_model)
+    elif model_type == "EVA":
+        import sys
+        sys.path.insert(0, "./third-party/EVA/src")
+        from model import EVAModel, EVATokenizer
+        model = EVAModel.from_pretrained(huggingface_model).cuda()
+        tokenizer = EVATokenizer.from_pretrained(huggingface_model)
+        sys.path = sys.path[1:]
 
     return model, tokenizer
 
@@ -86,7 +95,7 @@ def main():
     parser = argparse.ArgumentParser("Huggingface Generate Model Service")
     parser.add_argument("--huggingface_model", required=True)
     parser.add_argument("--port", default=55556, type=int)
-    parser.add_argument("--model_type", choices=["CLM", "T5"], default="CLM")
+    parser.add_argument("--model_type", choices=["CLM", "T5", "EVA"], default="CLM")
     args = parser.parse_args()
 
     model, tokenizer = load_model(args.huggingface_model, args.model_type)
